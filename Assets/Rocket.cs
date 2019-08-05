@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Rocket : MonoBehaviour
 {
-    [SerializeField] float mainThrust = 10f;
+    [SerializeField] float mainThrust = 15f;
     [SerializeField] float rcsThrust = 100f;
 
     public Rigidbody rocketRigidbody;
