@@ -50,7 +50,6 @@ public class Rocket : MonoBehaviour
     private void Thrust() {
         if (Input.GetKey(KeyCode.Space))
         {
-            // float thrustThisFrame = mainThrust * delta;
             rocketRigidbody.AddRelativeForce(Vector3.up * mainThrust);
             if (!thrustSoundIsPlaying)
             {
@@ -60,13 +59,15 @@ public class Rocket : MonoBehaviour
         }
         else
         {
-            thrustSoundIsPlaying = false;
             thrustSound.Stop();
+            thrustSoundIsPlaying = false;
         }
     }
 
     private void Rotate()
     {
+        
+        rocketRigidbody.angularVelocity = Vector3.zero;
         rocketRigidbody.freezeRotation = true; // take manual control of rotation
         float rotationThisFrame = rcsThrust * delta;
         
