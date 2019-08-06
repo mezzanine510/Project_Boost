@@ -1,72 +1,123 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
     [SerializeField] float mainThrust = 15f;
-    [SerializeField] float rcsThrust = 100f;
+    [SerializeField] float rcsThrust = 150f;
+    [SerializeField] AudioClip mainEngineSound;
+    [SerializeField] AudioClip successSound;
+    [SerializeField] AudioClip crashSound;
 
     public Rigidbody rocketRigidbody;
-    AudioSource thrustSound;
-    public float delta;
+    AudioSource audioSource;
     bool thrustSoundIsPlaying;
+    public float delta;
+
+    enum State { Alive, Dying, Transcending };
+    State currentState = State.Alive;
 
     // Start is called before the first frame update
     void Start()
     {
         rocketRigidbody = GetComponent<Rigidbody>();
-        thrustSound = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        delta = Time.deltaTime;
-        Thrust();
-        Rotate();
+        if (currentState == State.Alive) {
+            delta = Time.deltaTime;
+            Thrust();
+            Rotate();
+        }
     }
 
     void OnCollisionEnter(Collision collision)
     {
+        if (currentState != State.Alive) { return; }
+
         string tag = collision.gameObject.tag;
         switch (tag)
         {
             case "Friendly":
-                print("RAWR");
+                // do nothing
                 break;
-            
-            case "Fuel":
-                print("You gawt FUEL!");
+
+            case "Finish":
+                StartSuccessSequence();
                 break;
 
             default:
-                print("Game Over MAAAAAAAAAAN");
+                StartCrashSequence();
                 break;
         }
+    }
+
+    void StartSuccessSequence() {
+        currentState = State.Transcending;
+        Invoke("LoadNextLevel", 2f);
+        StopThrustSound(); 
+        PlaySuccessSound();
+    }
+
+    void StartCrashSequence() {
+        currentState = State.Dying;
+        Invoke("LoadFirstLevel", 2f);
+        StopThrustSound();
+        PlayCrashSound();
+    }
+
+    void LoadNextLevel() {
+        SceneManager.LoadScene(1);
+    }
+
+    void LoadFirstLevel() {
+        SceneManager.LoadScene(0);
     }
 
     private void Thrust() {
         if (Input.GetKey(KeyCode.Space))
         {
-            rocketRigidbody.AddRelativeForce(Vector3.up * mainThrust);
-            if (!thrustSoundIsPlaying)
-            {
-                thrustSound.Play();
-                thrustSoundIsPlaying = true;
-            }
+            ApplyThrust();
         }
         else
         {
-            thrustSound.Stop();
-            thrustSoundIsPlaying = false;
+            StopThrustSound();
         }
+    }
+
+    private void ApplyThrust()
+    {
+        rocketRigidbody.AddRelativeForce(Vector3.up * mainThrust);
+        if (!thrustSoundIsPlaying)
+        {
+            PlayThrustSound();
+        }
+    }
+
+    void PlayThrustSound() {
+        audioSource.PlayOneShot(mainEngineSound);
+        thrustSoundIsPlaying = true;
+    }
+
+    void StopThrustSound() {
+        audioSource.Stop();
+        thrustSoundIsPlaying = false;
+    }
+
+    void PlaySuccessSound() {
+        audioSource.PlayOneShot(successSound);
+    }
+
+    void PlayCrashSound() {
+        audioSource.PlayOneShot(crashSound);
     }
 
     private void Rotate()
     {
-        
         rocketRigidbody.angularVelocity = Vector3.zero;
         rocketRigidbody.freezeRotation = true; // take manual control of rotation
         float rotationThisFrame = rcsThrust * delta;
