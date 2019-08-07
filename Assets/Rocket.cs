@@ -6,6 +6,7 @@ public class Rocket : MonoBehaviour
 {
     [SerializeField] float mainThrust = 1500f;
     [SerializeField] float rcsThrust = 150f;
+    [SerializeField] float levelLoadDelay = 2f;
 
     [SerializeField] AudioClip mainEngineSound;
     [SerializeField] AudioClip successSound;
@@ -16,7 +17,7 @@ public class Rocket : MonoBehaviour
     [SerializeField] ParticleSystem crashParticles = default;
 
     public Rigidbody rocketRigidbody;
-    public Light thrustLight;
+    Light thrustLight;
     AudioSource audioSource;
     bool thrustSoundIsPlaying;
     public float delta;
@@ -69,7 +70,7 @@ public class Rocket : MonoBehaviour
         mainEngineParticles.Stop();
         StopThrustSound();
         PlaySuccessSound();
-        Invoke("LoadNextLevel", 2f);
+        Invoke("LoadNextLevel", levelLoadDelay);
     }
 
     void StartCrashSequence() {
@@ -78,7 +79,7 @@ public class Rocket : MonoBehaviour
         mainEngineParticles.Stop();
         StopThrustSound();
         PlayCrashSound();
-        Invoke("LoadFirstLevel", 2f);
+        Invoke("LoadFirstLevel", levelLoadDelay);
     }
 
     void LoadNextLevel() {
@@ -98,6 +99,7 @@ public class Rocket : MonoBehaviour
         {
             StopThrustSound();
             mainEngineParticles.Stop();
+            thrustLight.intensity = 0;
         }
     }
 
@@ -111,7 +113,7 @@ public class Rocket : MonoBehaviour
         }
 
         mainEngineParticles.Play();
-        thrustLight.intensity = 4.5f;
+        thrustLight.intensity = 5;
     }
 
     private void PlayThrustSound() {
