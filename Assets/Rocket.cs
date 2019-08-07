@@ -4,13 +4,19 @@ using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
-    [SerializeField] float mainThrust = 15f;
+    [SerializeField] float mainThrust = 1500f;
     [SerializeField] float rcsThrust = 150f;
+
     [SerializeField] AudioClip mainEngineSound;
     [SerializeField] AudioClip successSound;
     [SerializeField] AudioClip crashSound;
 
+    [SerializeField] ParticleSystem mainEngineParticles = default;
+    [SerializeField] ParticleSystem successParticles = default;
+    [SerializeField] ParticleSystem crashParticles = default;
+
     public Rigidbody rocketRigidbody;
+    public Light thrustLight;
     AudioSource audioSource;
     bool thrustSoundIsPlaying;
     public float delta;
@@ -23,6 +29,7 @@ public class Rocket : MonoBehaviour
     {
         rocketRigidbody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
+        thrustLight = GetComponent<Light>();
     }
 
     // Update is called once per frame
@@ -58,16 +65,20 @@ public class Rocket : MonoBehaviour
 
     void StartSuccessSequence() {
         currentState = State.Transcending;
-        Invoke("LoadNextLevel", 2f);
-        StopThrustSound(); 
+        successParticles.Play();
+        mainEngineParticles.Stop();
+        StopThrustSound();
         PlaySuccessSound();
+        Invoke("LoadNextLevel", 2f);
     }
 
     void StartCrashSequence() {
         currentState = State.Dying;
-        Invoke("LoadFirstLevel", 2f);
+        crashParticles.Play();
+        mainEngineParticles.Stop();
         StopThrustSound();
         PlayCrashSound();
+        Invoke("LoadFirstLevel", 2f);
     }
 
     void LoadNextLevel() {
@@ -86,39 +97,44 @@ public class Rocket : MonoBehaviour
         else
         {
             StopThrustSound();
+            mainEngineParticles.Stop();
         }
     }
 
     private void ApplyThrust()
     {
-        rocketRigidbody.AddRelativeForce(Vector3.up * mainThrust);
+        rocketRigidbody.AddRelativeForce(Vector3.up * mainThrust * delta);
+
         if (!thrustSoundIsPlaying)
         {
             PlayThrustSound();
         }
+
+        mainEngineParticles.Play();
+        thrustLight.intensity = 4.5f;
     }
 
-    void PlayThrustSound() {
+    private void PlayThrustSound() {
         audioSource.PlayOneShot(mainEngineSound);
         thrustSoundIsPlaying = true;
     }
 
-    void StopThrustSound() {
+    private void StopThrustSound() {
         audioSource.Stop();
         thrustSoundIsPlaying = false;
     }
 
-    void PlaySuccessSound() {
+    private void PlaySuccessSound() {
         audioSource.PlayOneShot(successSound);
     }
 
-    void PlayCrashSound() {
+    private void PlayCrashSound() {
         audioSource.PlayOneShot(crashSound);
     }
 
     private void Rotate()
     {
-        rocketRigidbody.angularVelocity = Vector3.zero;
+        // rocketRigidbody.angularVelocity = Vector3.zero;
         rocketRigidbody.freezeRotation = true; // take manual control of rotation
         float rotationThisFrame = rcsThrust * delta;
         
