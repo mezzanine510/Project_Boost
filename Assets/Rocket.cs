@@ -1,12 +1,14 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
     [SerializeField] float mainThrust = 1500f;
     [SerializeField] float rcsThrust = 150f;
-    [SerializeField] float levelLoadDelay = 2f;
+    [SerializeField] float thrustLightRate = 30f;
+    float thrustLightMin = 0;
+    float thrustLightMax = 5;
+    float levelLoadDelay = 3f;
 
     [SerializeField] AudioClip mainEngineSound;
     [SerializeField] AudioClip successSound;
@@ -20,7 +22,7 @@ public class Rocket : MonoBehaviour
     Light thrustLight;
     AudioSource audioSource;
     bool thrustSoundIsPlaying;
-    public float delta;
+    float delta;
 
     enum State { Alive, Dying, Transcending };
     State currentState = State.Alive;
@@ -99,7 +101,10 @@ public class Rocket : MonoBehaviour
         {
             StopThrustSound();
             mainEngineParticles.Stop();
-            thrustLight.intensity = 0;
+            if (thrustLight.intensity > thrustLightMin) 
+            {
+                thrustLight.intensity -= thrustLightRate * delta;
+            }
         }
     }
 
@@ -113,7 +118,10 @@ public class Rocket : MonoBehaviour
         }
 
         mainEngineParticles.Play();
-        thrustLight.intensity = 5;
+        if (thrustLight.intensity < thrustLightMax) 
+        {
+            thrustLight.intensity += thrustLightRate * delta;
+        }
     }
 
     private void PlayThrustSound() {

@@ -352,6 +352,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainThrust: 1500
   rcsThrust: 150
+  thrustLightRate: 30
   mainEngineSound: {fileID: 8300000, guid: 5a1bd66ccf67a8140ad4da9f4fedcd0a, type: 3}
   successSound: {fileID: 8300000, guid: c3c97499da90b5244aebc8cf08c12c70, type: 3}
   crashSound: {fileID: 8300000, guid: 8ceb515eb2688df45b1cca86c6998a18, type: 3}
@@ -359,7 +360,6 @@ MonoBehaviour:
   successParticles: {fileID: 3077839166229731309}
   crashParticles: {fileID: 5706804782367688397}
   rocketRigidbody: {fileID: 0}
-  delta: 0
 --- !u!1818360609 &1521067535
 RotationConstraint:
   m_ObjectHideFlags: 0
@@ -388,8 +388,8 @@ Light:
   serializedVersion: 9
   m_Type: 2
   m_Color: {r: 1, g: 0.6367924, b: 0.6367924, a: 1}
-  m_Intensity: 5
-  m_Range: 35
+  m_Intensity: 0
+  m_Range: 45
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -427,7 +427,7 @@ Light:
     serializedVersion: 2
     m_Bits: 55
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 1
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
