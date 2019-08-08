@@ -18,8 +18,9 @@ public class Rocket : MonoBehaviour
     [SerializeField] ParticleSystem successParticles = default;
     [SerializeField] ParticleSystem crashParticles = default;
 
-    public Rigidbody rocketRigidbody;
-    Light thrustLight;
+    [SerializeField] Light thrustLight;
+
+    public Rigidbody rocketRigidbody = default;
     AudioSource audioSource;
     bool thrustSoundIsPlaying;
     float delta;
@@ -32,7 +33,7 @@ public class Rocket : MonoBehaviour
     {
         rocketRigidbody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
-        thrustLight = GetComponent<Light>();
+        // thrustLight = GetComponent<Light>();
     }
 
     // Update is called once per frame

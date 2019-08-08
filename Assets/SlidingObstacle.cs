@@ -15,7 +15,8 @@ public class SlidingObstacle : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        startingPos = transform.position;   
+        startingPos = transform.position;
+        print(startingPos); 
     }
 
     // Update is called once per frame
