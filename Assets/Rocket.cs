@@ -9,6 +9,7 @@ public class Rocket : MonoBehaviour
     float thrustLightMin = 0;
     float thrustLightMax = 5;
     float levelLoadDelay = 3f;
+    bool deathOnCollision = true;
 
     [SerializeField] AudioClip mainEngineSound;
     [SerializeField] AudioClip successSound;
@@ -22,33 +23,63 @@ public class Rocket : MonoBehaviour
 
     public Rigidbody rocketRigidbody = default;
     AudioSource audioSource;
+    int numberOfLevels;
     bool thrustSoundIsPlaying;
     float delta;
 
-    enum State { Alive, Dying, Transcending };
-    State currentState = State.Alive;
+    bool isTransitioning = false;
+    bool collisionDeathDisabled = false;
+
+    // keep this method for future reference
+    // enum State { Alive, Dying, Transcending };
+    // State currentState = State.Alive;
+
 
     // Start is called before the first frame update
     void Start()
     {
         rocketRigidbody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
-        // thrustLight = GetComponent<Light>();
+        numberOfLevels = SceneManager.sceneCountInBuildSettings;
+        print(numberOfLevels);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (currentState == State.Alive) {
+        if (!isTransitioning) {
             delta = Time.deltaTime;
             Thrust();
             Rotate();
+        }
+
+        if (Debug.isDebugBuild)
+        {
+            RespondToDebugKeys();
+        }
+    }
+
+    void RespondToDebugKeys()
+    {
+        if (Input.GetKeyDown(KeyCode.L)) // debugging
+        {
+            LoadNextLevel();
+        }
+        else if (Input.GetKeyDown(KeyCode.C)) // debugging
+        {
+            collisionDeathDisabled = !collisionDeathDisabled;
+
+            // GameObject[] collisionObjects = GameObject.FindGameObjectsWithTag("Obstacle");
+            // foreach (GameObject gameObject in collisionObjects)
+            // {
+            //     gameObject.tag = "Friendly";
+            // }
         }
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        if (currentState != State.Alive) { return; }
+        if (isTransitioning || collisionDeathDisabled) { return; }
 
         string tag = collision.gameObject.tag;
         switch (tag)
@@ -68,7 +99,7 @@ public class Rocket : MonoBehaviour
     }
 
     void StartSuccessSequence() {
-        currentState = State.Transcending;
+        isTransitioning = true;
         successParticles.Play();
         mainEngineParticles.Stop();
         StopThrustSound();
@@ -77,7 +108,7 @@ public class Rocket : MonoBehaviour
     }
 
     void StartCrashSequence() {
-        currentState = State.Dying;
+        isTransitioning = true;
         crashParticles.Play();
         mainEngineParticles.Stop();
         StopThrustSound();
@@ -86,30 +117,33 @@ public class Rocket : MonoBehaviour
     }
 
     void LoadNextLevel() {
-        SceneManager.LoadScene(1);
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+        if (nextSceneIndex == numberOfLevels) 
+        {
+            LoadFirstLevel();
+        }
+        else {
+            SceneManager.LoadScene(nextSceneIndex);
+        }
     }
 
     void LoadFirstLevel() {
         SceneManager.LoadScene(0);
     }
 
-    private void Thrust() {
+    void Thrust() {
         if (Input.GetKey(KeyCode.Space))
         {
             ApplyThrust();
         }
         else
         {
-            StopThrustSound();
-            mainEngineParticles.Stop();
-            if (thrustLight.intensity > thrustLightMin) 
-            {
-                thrustLight.intensity -= thrustLightRate * delta;
-            }
+            StopApplyingThrust();
         }
     }
 
-    private void ApplyThrust()
+    void ApplyThrust()
     {
         rocketRigidbody.AddRelativeForce(Vector3.up * mainThrust * delta);
 
@@ -125,12 +159,22 @@ public class Rocket : MonoBehaviour
         }
     }
 
-    private void PlayThrustSound() {
+    void StopApplyingThrust()
+    {
+        StopThrustSound();
+        mainEngineParticles.Stop();
+        if (thrustLight.intensity > thrustLightMin) 
+        {
+            thrustLight.intensity -= thrustLightRate * delta;
+        }
+    }
+
+    void PlayThrustSound() {
         audioSource.PlayOneShot(mainEngineSound);
         thrustSoundIsPlaying = true;
     }
 
-    private void StopThrustSound() {
+    void StopThrustSound() {
         audioSource.Stop();
         thrustSoundIsPlaying = false;
     }
@@ -139,23 +183,25 @@ public class Rocket : MonoBehaviour
         audioSource.PlayOneShot(successSound);
     }
 
-    private void PlayCrashSound() {
+    void PlayCrashSound() {
         audioSource.PlayOneShot(crashSound);
     }
 
-    private void Rotate()
+    void Rotate()
     {
-        // rocketRigidbody.angularVelocity = Vector3.zero;
-        rocketRigidbody.freezeRotation = true; // take manual control of rotation
-        float rotationThisFrame = rcsThrust * delta;
-        
-        if (Input.GetKey(KeyCode.A)) {
-            transform.Rotate(Vector3.forward * rotationThisFrame);
+        if (Input.GetKey(KeyCode.A))
+        {
+            ManualRotation(rcsThrust * delta);
         }
-        else if (Input.GetKey(KeyCode.D)) {
-            transform.Rotate(Vector3.back * rotationThisFrame);
+        else if (Input.GetKey(KeyCode.D))
+        {
+            ManualRotation(-rcsThrust * delta);
         }
+    }
 
+    void ManualRotation(float rotationThisFrame) {
+        rocketRigidbody.freezeRotation = true; // take manual control of rotation
+        transform.Rotate(Vector3.forward * rotationThisFrame);
         rocketRigidbody.freezeRotation = false; // resume physics control of rotation;
     }
 }

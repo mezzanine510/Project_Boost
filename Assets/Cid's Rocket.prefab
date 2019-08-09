@@ -732,11 +732,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3966149698194727251}
     m_Modifications:
-    - target: {fileID: 3370268359777846305, guid: 53a69762192fd4f03b1984a7fb500e60,
-        type: 3}
-      propertyPath: m_Name
-      value: Thrust Light
-      objectReference: {fileID: 0}
     - target: {fileID: 3370268359777846319, guid: 53a69762192fd4f03b1984a7fb500e60,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -792,6 +787,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3370268359777846318, guid: 53a69762192fd4f03b1984a7fb500e60,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3370268359777846318, guid: 53a69762192fd4f03b1984a7fb500e60,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3370268359777846305, guid: 53a69762192fd4f03b1984a7fb500e60,
+        type: 3}
+      propertyPath: m_Name
+      value: Thrust Light
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53a69762192fd4f03b1984a7fb500e60, type: 3}
 --- !u!4 &2203490133753666684 stripped
@@ -813,11 +823,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3966149698194727251}
     m_Modifications:
-    - target: {fileID: 6245591644400683397, guid: a3553fd250eb92d4091bebde350c6739,
-        type: 3}
-      propertyPath: m_Name
-      value: Rocket Jet Particles
-      objectReference: {fileID: 0}
     - target: {fileID: 6250632634734159737, guid: a3553fd250eb92d4091bebde350c6739,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -873,20 +878,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6057609209280474417, guid: a3553fd250eb92d4091bebde350c6739,
+    - target: {fileID: 6245591644400683397, guid: a3553fd250eb92d4091bebde350c6739,
         type: 3}
-      propertyPath: LightsModule.enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6057609209280474417, guid: a3553fd250eb92d4091bebde350c6739,
-        type: 3}
-      propertyPath: LightsModule.ratio
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6057609209280474417, guid: a3553fd250eb92d4091bebde350c6739,
-        type: 3}
-      propertyPath: LightsModule.intensityCurve.scalar
-      value: 0.5
+      propertyPath: m_Name
+      value: Rocket Jet Particles
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a3553fd250eb92d4091bebde350c6739, type: 3}
